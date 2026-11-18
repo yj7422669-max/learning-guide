@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파일 하나가 팀 서버에 도착하기까지 — 연후의 파일 서비스 교본</title>
+<style>
+:root{--ink:#17263c;--sub:#61718a;--blue:#285cdb;--light:#eef4ff;--line:#dfe6f0;--paper:#fff;--bg:#f5f7fb;--good:#207658;--warn:#946019}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:28px}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI","Malgun Gothic",sans-serif;font-size:16px;line-height:1.85}a{color:var(--blue);text-underline-offset:4px}button{font:inherit;cursor:pointer}button:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid #82a8ff;outline-offset:4px}button:disabled{cursor:default;opacity:.5}
+.shell{display:grid;grid-template-columns:252px minmax(0,1fr);max-width:1450px;margin:auto}.side{position:sticky;top:0;height:100vh;padding:32px 22px;border-right:1px solid var(--line);overflow:auto;background:#f9fbff}.brand{font-size:12px;letter-spacing:2px;color:var(--blue);font-weight:700}.side h2{font-size:20px;margin:10px 0 22px;line-height:1.5}.side nav{display:grid;gap:4px}.side nav a{color:var(--sub);text-decoration:none;padding:8px 10px;border-radius:8px;font-size:13px}.side nav a:hover,.side nav a.active{background:#e9effc;color:var(--blue)}.print{margin-top:25px;border:1px solid var(--line);background:white;padding:9px 14px;border-radius:9px;width:100%;font-size:13px}.side small{display:block;margin-top:16px;color:var(--sub);font-size:11px;line-height:1.7}
+main{min-width:0;padding:46px 54px 70px;max-width:1130px}.hero{padding:38px 40px;border-radius:22px;background:#172d51;color:white;position:relative;overflow:hidden}.hero .eyebrow{color:#a7c3ff;font-size:12px;letter-spacing:2px}.hero h1{font-size:37px;letter-spacing:-1.5px;line-height:1.35;margin:18px 0}.hero p{color:#d0ddf2;max-width:650px;font-size:15px;margin-bottom:0}.hero .meta{margin-top:26px;color:#adc5ec;font-size:12px}.intro{margin:24px 0 35px;color:var(--sub)}.intro strong{color:var(--ink)}section.chapter{padding-top:28px;margin-top:24px;scroll-margin-top:24px}.chapter>h2{font-size:27px;letter-spacing:-1px;margin:8px 0 17px;line-height:1.45}.chapter>h2 .n{font-size:12px;letter-spacing:1px;color:var(--blue);display:block;margin-bottom:7px}.lede{font-size:17px;color:#3b516e}.card{background:white;border:1px solid var(--line);border-radius:15px;padding:25px;margin:18px 0}.card h3{margin:0 0 10px;font-size:19px;line-height:1.5}.card p:last-child{margin-bottom:0}p{margin:12px 0}strong{font-weight:700}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:18px 0}.grid .card{margin:0}.callout{padding:16px 20px;border-left:4px solid var(--blue);background:var(--light);border-radius:0 10px 10px 0;margin:20px 0;font-size:14px}.callout.warn{background:#fff6e8;border-left-color:#ca9135}.callout.good{background:#edf8f2;border-left-color:#2f8c69}.badge{display:inline-block;padding:3px 9px;border-radius:7px;background:#ecf1fa;color:#47617f;font-size:11px;font-weight:700;margin:0 5px 5px 0}.badge.pc{background:#edf3ff;color:#285cdb}.badge.server{background:#edf7f2;color:#207658}.badge.powershell{background:#f4edfd;color:#7950b7}.badge.done{background:#eaf6ef;color:#207658}.badge.pending{background:#fff4de;color:#946019}
+.table-wrap{overflow-x:auto;margin:17px 0;border:1px solid var(--line);border-radius:12px;background:white}table{border-collapse:collapse;width:100%;font-size:13px;min-width:500px}th,td{padding:13px 15px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#edf2fa;font-weight:700}tr:last-child td{border-bottom:0}td:first-child{font-weight:600}td code{word-break:break-word}code{font-family:Consolas,"Malgun Gothic",monospace;background:#ecf1f8;color:#24518a;padding:2px 5px;border-radius:4px;font-size:.88em}pre{position:relative;margin:10px 0 16px;padding:19px 18px;background:#14263f;color:#e7efff;border-radius:11px;overflow:auto;line-height:1.7;font-size:13px;tab-size:2}pre code{color:inherit;background:none;padding:0;font-size:inherit}.cmdhead{display:flex;gap:8px;align-items:center;justify-content:space-between;font-size:12px;color:var(--sub);margin-top:18px}.cmdhead button{border:1px solid var(--line);background:white;color:#405b7c;padding:4px 10px;border-radius:6px;font-size:11px}.why{display:grid;grid-template-columns:66px 1fr;gap:6px 10px;font-size:14px;margin:13px 0}.why b{color:var(--blue);font-size:12px;padding-top:2px}.timeline{counter-reset:step}.step{position:relative;margin:0 0 0 16px;padding:0 0 25px 30px;border-left:2px solid #d7e2f5}.step:last-child{padding-bottom:0;border-color:transparent}.step:before{counter-increment:step;content:counter(step);position:absolute;left:-15px;top:0;width:28px;height:28px;border-radius:50%;background:#e4edff;color:var(--blue);display:grid;place-items:center;font-size:12px;font-weight:bold}.step h3{margin:0 0 8px;font-size:18px}.step p{font-size:14px;margin:7px 0}.step .source{font-size:12px}.path{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin:20px 0}.node{background:white;border:1px solid var(--line);border-radius:10px;padding:12px 14px;flex:1;min-width:125px;font-size:13px}.node strong{display:block;color:var(--blue)}.node small{display:block;color:var(--sub);font-size:11px}.arrow{align-self:center;color:#94a8c9}.flow-tabs{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0}.flow-tabs button{border:1px solid var(--line);background:white;color:#52667e;padding:8px 13px;border-radius:8px;font-size:13px}.flow-tabs button[aria-selected=true]{background:var(--blue);border-color:var(--blue);color:white}.flow-box{background:white;border:1px solid #d2dff4;border-radius:15px;padding:24px}.flow-box h3{margin-top:0}.flow-box ol{padding-left:23px;margin-bottom:0}.flow-box li{padding:5px 0;font-size:14px}.flow-note{color:var(--sub);font-size:13px}.source{font-size:12px;color:var(--sub)}.source a{margin-right:10px}.split{display:grid;grid-template-columns:1fr 1fr;gap:16px}.split h4{margin:0 0 10px;font-size:15px}.split p{font-size:14px}.error-label{font-family:Consolas,monospace;font-size:13px;color:#9c4545;font-weight:700}details{background:white;border:1px solid var(--line);border-radius:12px;margin:12px 0;padding:16px 19px}summary{cursor:pointer;font-weight:650;font-size:15px}details>div{padding-top:10px;font-size:14px}details p{margin:9px 0}.check-list{padding-left:22px;font-size:14px}.check-list li{padding:6px 0}.qa{margin:12px 0;padding:17px 0;border-bottom:1px solid var(--line)}.qa h3{font-size:16px;margin:0 0 8px}.qa p{font-size:14px;color:#465d78}.quiz-item{border-bottom:1px solid var(--line);padding:17px 0}.quiz-item p{font-size:15px;font-weight:650}.quiz-item button{border:1px solid var(--line);background:white;color:#36516f;border-radius:8px;padding:8px 11px;margin:4px;font-size:13px}.quiz-item button.correct{border-color:#2a8c65;background:#eef8f1}.quiz-item button.wrong{border-color:#c75d65;background:#fff0f1}.quiz-feedback{color:var(--sub);font-size:13px;min-height:25px}.bottom{margin-top:35px;border-top:1px solid var(--line);padding-top:20px;color:var(--sub);font-size:12px}.small{font-size:13px;color:var(--sub)}.kbd{font-family:inherit;background:white;border:1px solid #cad6e6;border-bottom-width:3px;border-radius:5px;padding:1px 5px;font-size:12px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+@media(max-width:1100px){main{padding:35px 28px}.shell{grid-template-columns:220px minmax(0,1fr)}.side{padding:25px 13px}.hero{padding:30px}.hero h1{font-size:31px}.split{grid-template-columns:1fr}}
+@media(max-width:760px){.shell{display:block}.side{position:static;height:auto;padding:20px;border:0;border-bottom:1px solid var(--line)}.side h2{margin-bottom:10px}.side nav{display:flex;overflow-x:auto;gap:5px;padding:5px 0}.side nav a{white-space:nowrap}.side small{display:none}.print{width:auto;margin-top:12px}.hero{padding:25px}.hero h1{font-size:28px}main{padding:25px 17px}.grid{grid-template-columns:1fr}.card{padding:20px}.chapter>h2{font-size:24px}body{font-size:15px}.flow-box{padding:19px}.why{grid-template-columns:53px 1fr}.arrow{display:none}.node{min-width:135px}}
+@media print{body{background:white;font-size:11pt}.shell{display:block}.side,.flow-tabs,.cmdhead button,.quiz-item button,.print-only-hide{display:none!important}main{max-width:none;padding:0}.hero{background:#edf2fa;color:#17263c;padding:20px}.hero p,.hero .meta,.hero .eyebrow{color:#38516f}.hero h1{font-size:26pt}.chapter>h2{font-size:20pt}.card,details,.flow-box{break-inside:avoid;border-color:#aaa}.table-wrap{overflow:visible}table{min-width:0;font-size:9pt}pre{white-space:pre-wrap;overflow:visible;background:#eff3f8;color:#17263c;font-size:9pt;break-inside:avoid}.grid,.split{display:block}.grid .card{margin:10px 0}.flow-box{display:block!important;margin-bottom:12px}details>div{display:block}a{color:#244d83}.quiz-feedback{display:block}.chapter{break-before:auto}.hero .meta{margin-top:12px}section.chapter{margin-top:10px}.bottom{font-size:9pt}}
+/* One chapter at a time; keep the complete book available in print. */
+.chapter[hidden], .hero[hidden], .intro[hidden] { display: none; }
+.chapter-pager { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-top:36px; padding-top:22px; border-top:1px solid var(--line); }
+.chapter-pager a { display:flex; flex-direction:column; text-decoration:none; color:var(--ink); max-width:45%; font-size:14px; padding:10px 0; }
+.chapter-pager a:last-child { text-align:right; margin-left:auto; }
+.chapter-pager small { font-size:11px; color:var(--sub); margin-bottom:3px; }
+.chapter-pager a[hidden] { display:none; }
+.chapter-position { margin-bottom:18px; color:var(--sub); font-size:12px; }
+.chapter-position strong { color:var(--blue); }
+.mobile-chapters { display:none; }
+.chapter-select { width:100%; margin-top:6px; padding:11px 12px; border:1px solid var(--line); background:white; color:var(--ink); border-radius:9px; font:inherit; font-size:14px; }
+body.paged-book section.chapter { margin-top:0; padding-top:0; }
+body.paged-book section.chapter:first-of-type { margin-top:24px; }
+@media(max-width:760px) {
+  .side nav { display:none; }
+  .mobile-chapters { display:block; font-size:12px; color:var(--sub); }
+  .side { padding:18px 20px; }
+  .side h2 { font-size:18px; }
+  .side .print { margin-top:12px; padding:6px 10px; }
+  .chapter-pager { gap:12px; }
+  .chapter-pager a { font-size:12px; }
+}
+@media print {
+  section.chapter[hidden], .hero[hidden], .intro[hidden] { display:block!important; }
+  .chapter-pager, .chapter-position, .mobile-chapters { display:none!important; }
+  section.chapter { break-before:page!important; padding-top:0!important; margin-top:0!important; }
+  section.chapter:first-of-type { break-before:auto!important; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="side">
+  <div class="brand">IDEACONNECTION · LEARNING BOOK</div>
+  <h2>연후의 파일 서비스<br>작업·이해 교본</h2>
+  <nav aria-label="교본 목차">
+    <a href="#start">01 · 내가 만든 것</a>
+    <a href="#msa">02 · MSA에서의 역할</a>
+    <a href="#journey">03 · 실제 작업 순서</a>
+    <a href="#local">04 · 로컬 웹 열기</a>
+    <a href="#flow">05 · 파일이 이동하는 길</a>
+    <a href="#deploy">06 · Git에서 dev까지</a>
+    <a href="#errors">07 · 오류 해결 기록</a>
+    <a href="#permission">08 · 삭제 권한 실습</a>
+    <a href="#map">09 · 폴더·명령어 지도</a>
+    <a href="#verify">10 · 무엇으로 확인했나</a>
+    <a href="#handoff">11 · 팀원과 맞춘 정보</a>
+    <a href="#speak">12 · 직접 설명하기</a>
+    <a href="#quiz">13 · 이해 확인</a>
+    <a href="#sources">근거 자료</a>
+  </nav>
+<label class="mobile-chapters" for="chapter-select">읽을 챕터 선택<select class="chapter-select" id="chapter-select"></select></label>
+  <button class="print" id="print-button">인쇄 · PDF로 저장</button>
+  <small>2026.11.18 작업 기준<br>계정 비밀번호·토큰·실제 Secret 값은 수록하지 않았습니다.<br>명령어는 위치와 용도를 읽고 필요한 단계만 사용하세요.</small>
+</aside>
+<main id="book-main">
+<div class="chapter-position" id="chapter-position" aria-live="polite"></div>
+<header class="hero">
+  <div class="eyebrow">직접 한 작업으로 배우는 MSA</div>
+  <h1>파일 하나가<br>팀 서버에 도착하기까지</h1>
+  <p>버튼 하나를 만든 것에서 시작해 로그인·조직 권한·DB·파일 저장소·자동 배포까지 연결한 기록입니다. “무엇을 입력했는가”와 “왜 그렇게 했는가”를 함께 읽습니다.</p>
+  <div class="meta">대상: 처음 서비스를 만들어 본 비전공자 · 환경: WSL Ubuntu / 팀 dev · 작성 기준: 2026년 11월 18일</div>
+</header>
+<p class="intro"><strong>이 교본은 새 설치를 지시하는 문서가 아니라, 실제로 한 일을 이해하고 다시 찾는 안내서예요.</strong> 연후님이 화면을 확인한 결과, 저장소 코드에서 확인한 사실, 팀원이 공유한 결과를 구분했습니다. 현재 파일 기능은 dev에서 검증했고, prod 배포는 별도 작업입니다.</p>
+
+<section class="chapter" id="start">
+<h2><span class="n">CHAPTER 01</span>내가 만든 것은 무엇이었나</h2>
+<p class="lede">“같은 조직의 사람들이 파일을 올리고, 보고, 내려받고, 허용된 사람만 지울 수 있는 화면”을 만들었어요.</p>
+<div class="grid">
+<div class="card"><h3>연후님이 맡은 부분</h3><p>파일 관리 화면, 파일 선택과 이름 표시, 업로드 전 검사, 실제 API 연결, 목록·미리보기·다운로드·삭제, 사용자별 삭제 버튼, 실패 안내와 목록 갱신을 준비했어요. AI가 구현을 도왔고, 연후님은 명령 실행·PR 처리·실제 브라우저 검증을 따라갔어요.</p></div>
+<div class="card"><h3>건률님이 맡은 부분</h3><p>파일 API를 처리하는 서버, 파일 정보 DB 연동, SeaweedFS 파일 저장소, 조직 소속 확인 연결, 배포·경로 설정을 준비했어요. 실제 MySQL·SeaweedFS 통합 검증은 #119에 기록했어요.</p></div>
+</div>
+<div class="table-wrap"><table><thead><tr><th>기능</th><th>사용자가 하는 행동</th><th>우리가 확인한 것</th></tr></thead><tbody>
+<tr><td>목록</td><td>조직 선택 → 파일 관리</td><td>그 조직의 완료된 파일 또는 빈 목록 표시</td></tr>
+<tr><td>업로드</td><td>파일 선택 → 업로드</td><td>성공 안내와 목록 갱신</td></tr>
+<tr><td>미리보기</td><td>이미지·PDF의 미리보기 클릭</td><td>새 탭에서 표시. TXT·Office·SVG는 다운로드 안내</td></tr>
+<tr><td>다운로드</td><td>목록에서 다운로드</td><td>받은 파일 내용이 원본과 같음</td></tr>
+<tr><td>삭제</td><td>삭제 → 확인 또는 취소</td><td>취소 시 유지, 성공 시 제거, 사용자별 권한 차이</td></tr>
+</tbody></table></div>
+<p class="small">이번 파일 목록 미리보기는 구현했지만, US-08의 “채팅 채널 안에서 미리보기”까지 구현했다는 뜻은 아니에요. 역할은 사용자가 공유한 최신 역할표를 따르며, Git의 예전 일정표로 담당을 되돌리지 않습니다.</p>
+</section>
+
+<section class="chapter" id="msa">
+<h2><span class="n">CHAPTER 02</span>MSA에서 파일 서비스가 하는 일</h2>
+<p><strong>MSA는 큰 프로그램의 일을 여러 서비스로 나눠 연결하는 방식</strong>이에요. 우리 팀에서는 로그인, 조직·멤버, 파일, 채팅이 각각 다른 일을 맡아요. 이름만 나눴다고 MSA가 되는 것이 아니라, 서비스 사이의 요청과 권한도 맞아야 해요.</p>
+<div class="path" aria-label="브라우저에서 Gateway를 거쳐 서비스로 요청하는 구조">
+<div class="node"><strong>웹 화면</strong>사용자의 버튼·파일 선택<small>연후님 파일 프론트엔드</small></div><span class="arrow">→</span>
+<div class="node"><strong>Gateway</strong>주소에 따라 목적지 결정<small>공통 입구·교통정리</small></div><span class="arrow">→</span>
+<div class="node"><strong>파일 서비스</strong>권한·파일 상태·URL 발급<small>파일 관련 처리 담당</small></div>
+</div>
+<div class="table-wrap"><table><thead><tr><th>이름</th><th>쉬운 역할</th><th>파일 기능과의 관계</th></tr></thead><tbody>
+<tr><td>웹 / React</td><td>사람에게 보이는 화면</td><td>목록·버튼·선택 파일·오류를 보여주고 API를 요청해요.</td></tr>
+<tr><td>Keycloak</td><td>로그인 담당</td><td>로그인 후 토큰을 발급해요. “누구인가”를 증명하지만, 모든 조직의 파일에 접근을 허용하는 것은 아니에요.</td></tr>
+<tr><td>user-service</td><td>조직·멤버 담당</td><td>파일 서비스가 “이 사람이 이 조직 멤버인가, OWNER인가”를 확인할 때 연결해요.</td></tr>
+<tr><td>file-service</td><td>파일 업무 규칙 담당</td><td>업로드 시작·완료, 목록, 임시 URL 발급, 삭제·권한 판단을 처리해요.</td></tr>
+<tr><td>MySQL</td><td>구조화된 정보 보관</td><td>파일명·조직 번호·올린 사람·크기·저장 키·상태 등 메타데이터를 저장해요. 파일 서비스 전용 DB·계정을 사용해요.</td></tr>
+<tr><td>SeaweedFS</td><td>실제 파일 내용 보관</td><td>이미지·PDF·TXT의 실제 바이트를 보관해요. MySQL의 파일 정보와 구분해야 해요.</td></tr>
+<tr><td>Envoy Gateway</td><td>접속을 서비스별로 안내</td><td><code>/api/files</code>는 파일 서비스로, <code>/chat-attachments</code>는 저장소로 보내요.</td></tr>
+</tbody></table></div>
+<div class="callout"><strong>명단과 물건을 나눠 보관한다고 생각해요.</strong><br>MySQL에는 “파일 이름·주인·보관 위치”가 있고, SeaweedFS에는 “실제 파일”이 있어요. 목록이 보인다고 실제 파일을 내려받을 길까지 정상이라는 뜻은 아니에요.</div>
+<p class="small"><strong>코드에 나오는 S3:</strong> 이번 저장소는 SeaweedFS이며, S3 호환 API로 파일을 주고받아요. 그래서 설정 이름에 <code>S3_ENDPOINT</code> 등이 사용됩니다.</p>
+</section>
+
+<section class="chapter" id="journey">
+<h2><span class="n">CHAPTER 03</span>실제 작업을 순서대로 되짚기</h2>
+<div class="card timeline">
+<article class="step"><h3>기존 화면에서 연결 지점을 찾았어요</h3><p><code>App.jsx</code>의 조직 선택 함수가 선택한 조직을 기억하고 대시보드로 바꿨어요. <code>Dashboard.jsx</code>의 <code>activeMenu</code>가 본문에 무엇을 보여줄지 결정했어요.</p><p><strong>왜?</strong> 파일 화면을 새 앱으로 따로 만드는 대신 기존 로그인·조직 선택·메뉴 구조에 붙이기 위해서예요.</p></article>
+<article class="step"><h3>빈 파일 화면과 파일 선택부터 만들었어요</h3><p>파일 메뉴를 눌렀을 때 제목과 빈 상태를 표시했어요. <code>selectedFile</code>로 선택한 파일을 기억하고 이름을 보여줬어요. 처음에는 파일 선택 입력칸을 중복으로 넣어 버튼이 두 개 보였고, 하나만 남겼어요.</p><p><strong>이때의 성공:</strong> 파일을 바꾸면 이름이 바뀜. <strong>아직 안 된 것:</strong> 서버로 파일 전송.</p></article>
+<article class="step"><h3>로컬 웹을 켜기 위해 주변 프로그램을 준비했어요</h3><p><code>npm ci</code>로 웹 의존성을 설치했고 Vite를 켰어요. 로그인용 Keycloak, 조직 목록용 MySQL과 user-service도 필요했어요. Java 17을 설치해 user-service를 실행한 뒤 조직을 만들고 파일 메뉴로 들어갔어요.</p></article>
+<article class="step"><h3>업로드 전에 혼자 할 수 있는 화면 작업을 했어요</h3><p>100MB 제한·선택 취소·업로드 버튼·로딩·빈 목록·실패 안내·페이지 이동을 만들었어요. 당시 파일 API가 없어서 <code>No static resource api/files</code>가 나왔고, 실패 안내 중에도 파일 선택이 되는지 확인했어요.</p><p><strong>왜?</strong> API를 기다리는 동안 입력·상태·실패 대응을 먼저 준비하면 실제 연결할 때 확인 범위가 줄어들어요.</p></article>
+<article class="step"><h3>팀원의 최신 화면 변경을 합쳤어요</h3><p>main에 로그아웃·멤버·초대 기능 등이 추가되며 <code>Dashboard.jsx</code>에서 충돌이 났어요. 최신 기능과 파일 화면을 함께 남겨 해결했고, 파일 선택·로그아웃 버튼·멤버 메뉴가 보이는지 확인했어요.</p><p><strong>충돌은 무엇?</strong> 같은 부분의 두 수정 중 어떻게 합칠지 Git이 자동으로 결정하지 못하는 상황이에요.</p></article>
+<article class="step"><h3>#119의 실제 파일 API와 연결했어요</h3><p>건률님이 목록·업로드·URL 발급·삭제 API와 프론트 요청 모듈을 준비했어요. 응답의 <code>items</code>, <code>total</code>, <code>id</code>, <code>name</code>을 맞추고, 로그인 토큰을 자동 첨부하는 기존 요청 함수를 사용했어요.</p><p class="source"><a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/pull/119">#119 파일 백엔드</a><a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/pull/102">#102 목록·업로드·다운로드 연결</a></p></article>
+<article class="step"><h3>머지 후에도 이전 화면이 보이는 이유를 찾았어요</h3><p>새 이미지가 만들어져 main의 태그는 바뀌었지만 dev는 이전 이미지를 실행 중이었어요. Argo CD에 Git 새로고침을 요청한 뒤 실제 이미지가 바뀌고 파드가 준비됐는지 확인했어요. 브라우저에서는 <span class="kbd">Ctrl + Shift + R</span>로 새로고침했어요.</p></article>
+<article class="step"><h3>목록은 성공했는데 업로드가 실패했어요</h3><p>팀 dev에서 목록은 나왔지만 업로드는 <code>Failed to fetch</code>였어요. 조회 결과 저장소 경로의 <code>ResolvedRefs=False / RefNotPermitted</code>, ReferenceGrant 없음, 저장소 경로 HTTP 500이 확인됐어요.</p><p>허용 설정은 Git에 있었지만 아직 실제 적용 전이었어요. 기선님도 같은 원인을 확인했고, 건률님이 설정 반영 후 재확인을 요청했어요. 이후 연후님이 업로드·목록·다운로드 원본 일치를 확인했어요.</p></article>
+<article class="step"><h3>미리보기·화면 디자인을 정리했어요</h3><p>이미지·PDF 미리보기 API를 연결하고, TXT 등은 다운로드 안내를 표시했어요. 미리보기는 테두리 버튼, 다운로드는 연한 파란색으로 바꾸고 업로드 영역·파일 목록을 정돈했어요. 개인 예시 페이지는 로컬에만 남기고 Git 공유 대상에서 제외했어요.</p><p class="source"><a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/pull/125">#125 미리보기·디자인</a></p></article>
+<article class="step"><h3>삭제·권한·실패 대응을 묶어 마무리했어요</h3><p>업로더와 OWNER에게만 삭제 버튼을 보이고 확인창을 거치게 했어요. 취소·실패·중복 클릭·마지막 페이지 복귀·목록 재시도·빈 파일 검사를 보완했어요. 자동 테스트 17개, lint, build를 통과했고 한 PR에 모았어요.</p><p class="source"><a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/pull/126">#126 삭제·권한·최종 검증 기록</a></p></article>
+<article class="step"><h3>버튼을 건너뛰어도 서버가 막는지 확인했어요</h3><p>testuser2로 testuser의 시험 파일 삭제 API를 직접 요청했어요. 처음 401은 인증 문제여서 성공으로 세지 않았고, 인증된 새 요청으로 다시 실행해 <strong>403 “파일을 처리할 권한이 없습니다.”</strong>를 확인했어요.</p><p><strong>무엇을 배웠나?</strong> “버튼을 숨겼다”와 “서버가 금지했다”는 서로 다른 검증이에요.</p></article>
+</div>
+</section>
+
+<section class="chapter" id="local">
+<h2><span class="n">CHAPTER 04</span>처음 로컬 웹을 어떻게 열었나</h2>
+<p><strong>VS Code는 코드 편집기이고, 터미널은 프로그램 실행 명령을 입력하는 곳이에요.</strong> 웹 화면이 열리려면 실제 웹 프로그램을 실행해 둬야 해요. Vite는 수정한 웹 화면을 내 PC에서 열어 주는 개발용 서버예요.</p>
+<div class="table-wrap"><table><thead><tr><th>환경 / 주소</th><th>당시 사용 목적</th><th>구분하는 방법</th></tr></thead><tbody>
+<tr><td>로컬 WSL</td><td>코드·npm·Java·Docker 실행</td><td>터미널 앞에 <code>yeonhoo@DESKTOP…</code></td></tr>
+<tr><td>localhost:5173</td><td>내 PC의 개발용 웹 화면</td><td>Vite 실행 중이어야 열림</td></tr>
+<tr><td>localhost:8180</td><td>내 PC의 Keycloak</td><td>포트가 관리자/사용자를 나누는 게 아님. <code>master</code>와 <code>hellocloud</code> 영역이 다름</td></tr>
+<tr><td>localhost:8081</td><td>내 PC의 user-service</td><td>조직·멤버 API 처리</td></tr>
+<tr><td>localhost:3306</td><td>내 PC MySQL</td><td>DB 프로그램의 접속 포트</td></tr>
+<tr><td>10.10.24.101</td><td>팀 dev 웹</td><td>팀 서버·팀 계정·팀 DB 사용</td></tr>
+<tr><td>localhost:8091</td><td>별도 작업에서 연 prod Argo CD 관리 화면</td><td>파일 앱이 아님. 배포 관리 화면</td></tr>
+</tbody></table></div>
+<div class="callout warn"><strong>localhost는 “지금 그 프로그램이 바라보는 자기 컴퓨터”예요.</strong> 내 PC의 localhost와 서버 안의 localhost는 달라요. 로컬에서 만든 계정도 dev의 계정으로 자동 복사되지 않아요.</div>
+
+<div class="card"><h3>1. 웹 실행에 필요한 파일 설치</h3>
+<span class="badge pc">내 PC · VS Code WSL</span><p>위 메뉴 <strong>Terminal → New Terminal</strong>. 아래 명령은 한 줄씩 입력해요.</p>
+<div class="cmdhead"><span>처음 한 번 또는 의존성이 바뀐 경우</span><button data-copy="cmd-web-install">복사</button></div>
+<pre id="cmd-web-install"><code>cd ~/team03-HelloCloud/services/web
+npm ci</code></pre>
+<div class="why"><b>왜?</b><span>npm은 JavaScript 프로젝트의 패키지 관리 도구예요. <code>npm ci</code>는 package-lock.json에 정해진 의존성 버전대로 설치해요.</span><b>정상</b><span>설치 완료 뒤 명령 입력 줄이 다시 나와요. 의존성 취약점 안내와 서버 실행 실패는 구분해요. <code>npm audit fix</code>를 무작정 실행해 팀 버전을 바꾸지 않았어요.</span></div>
+<div class="cmdhead"><span>웹 서버 실행</span><button data-copy="cmd-web-run">복사</button></div>
+<pre id="cmd-web-run"><code>npm run dev</code></pre>
+<p>당시 <code>VITE … ready</code>, <code>Local: http://localhost:5173/</code>가 나왔어요. 브라우저에서 그 주소를 열었어요. 이 터미널을 종료하거나 <span class="kbd">Ctrl + C</span>를 누르면 웹도 꺼져요.</p>
+</div>
+
+<div class="card"><h3>2. 로그인 서버 주소 지정</h3><span class="badge pc">내 PC · VS Code WSL / 파일 편집</span>
+<p>웹 폴더에서 예시 설정을 로컬 설정 파일로 복사했어요. 아래 복사는 <strong>파일이 없을 때만</strong> 수행하는 Ubuntu GNU 명령이에요.</p>
+<pre><code>cd ~/team03-HelloCloud/services/web
+cp --update=none .env.example .env.local
+grep '^VITE_KEYCLOAK_URL=' .env.local</code></pre>
+<p>확인한 주소는 <code>VITE_KEYCLOAK_URL=http://localhost:8180</code>였어요. 웹 환경 설정을 바꾼 뒤에는 Vite를 멈췄다가 다시 켰어요.</p>
+<div class="why"><b>왜?</b><span>로컬 웹과 로그인 서버는 주소가 달라요. 로그인 요청을 엉뚱하게 웹 서버로 보내지 않도록 해요. 이 grep은 로그인 서버 주소 한 항목만 확인하며 비밀번호 파일 전체를 출력하지 않아요.</span></div>
+</div>
+
+<div class="card"><h3>3. Keycloak과 MySQL 켜기</h3><span class="badge pc">내 PC · 별도 WSL 터미널</span>
+<p>프로젝트 루트의 <code>.env</code>가 없어서 먼저 예시에서 만들었고, <code>KC_BOOTSTRAP_ADMIN_PASSWORD</code>와 <code>DB_PASSWORD</code>를 로컬용 값으로 채웠어요. 이 값은 팀 서버 비밀번호와 별개예요. 이미 만든 .env는 덮어쓰지 않아요.</p>
+<pre><code>cd ~/team03-HelloCloud
+cp --update=none .env.example .env
+# VS Code에서 .env를 열어 필요한 로컬 값을 채운 뒤 저장
+cd services
+docker compose --env-file ../.env up -d keycloak mysql
+docker compose --env-file ../.env ps keycloak mysql</code></pre>
+<div class="why"><b>왜?</b><span>Docker Compose는 compose.yaml에 정리된 프로그램들을 실행해요. <code>--env-file</code>은 설정값을 읽을 파일, <code>-d</code>는 터미널에 붙잡아 두지 않고 뒤에서 실행한다는 뜻이에요.</span><b>정상</b><span>Keycloak은 Up, MySQL은 초기 준비 후 healthy. Keycloak은 <code>127.0.0.1:8180→8080</code>, MySQL은 <code>127.0.0.1:3306→3306</code>으로 연결됐어요.</span></div>
+<p class="small">MySQL 계정은 처음 비어 있는 데이터 볼륨을 초기화할 때 만들어져요. 나중에 .env의 비밀번호만 바꾼다고 기존 DB 계정 비밀번호가 자동 변경되지는 않아요. 접속 실패를 해결하려고 데이터 볼륨을 지우지 않습니다.</p>
+</div>
+
+<div class="card"><h3>4. 조직 API를 제공하는 user-service 켜기</h3><span class="badge pc">내 PC · 별도 WSL 터미널</span>
+<p>처음에는 <code>java: not found</code>였고 Java 17 개발 도구를 설치했어요.</p>
+<pre><code>sudo apt update
+sudo apt install openjdk-17-jdk-headless
+java -version</code></pre>
+<p><code>sudo</code>가 물어보는 것은 WSL의 yeonhoo 계정 비밀번호예요. Keycloak·DB 비밀번호와 달라요. 설치 중 <code>Do you want to continue? [Y/n]</code>은 설치 진행 여부 질문이었어요.</p>
+<div class="cmdhead"><span>당시 user-service 실행 명령 · 로컬 DB 값 사용</span><button data-copy="cmd-user">복사</button></div>
+<pre id="cmd-user"><code>cd ~/team03-HelloCloud/services
+read -rsp "로컬 DB 비밀번호: " DB_PASSWORD; echo
+DB_PASSWORD="$DB_PASSWORD" \
+DB_URL='jdbc:mysql://localhost:3306/user_service' \
+DB_USERNAME=user_service \
+OIDC_ISSUER_URI='http://localhost:8180/realms/hellocloud' \
+./gradlew :user-service:bootRun</code></pre>
+<div class="why"><b>왜?</b><span>Gradle은 Java 프로젝트의 검사·빌드·실행 도구예요. 프로젝트에 포함된 <code>gradlew</code>를 사용했어요. 앞의 설정은 프로그램이 사용할 DB와 로그인 서버를 지정해요.</span><b>정상</b><span><code>Tomcat started on port 8081</code>과 <code>Started UserServiceApplication</code>. 아래의 88% EXECUTING은 서버가 계속 실행 중이라 남아 있던 표시였어요.</span></div>
+<p><strong>서비스를 켠 뒤 브라우저를 다시 새로고침</strong>했어요. 그 결과 조직 목록의 502가 사라지고 조직을 선택해 파일 화면에 들어갔어요.</p>
+</div>
+<details><summary>다음 날 다시 켤 때 전부 설치하나요?</summary><div><p>아니에요. 패키지 설치·.env 작성·계정 등록·Java 설치는 이미 했다면 반복하지 않아요. 보통은 <strong>Docker 프로그램 켜기 → user-service 실행 → Vite 실행</strong>만 해요. 파일 API까지 로컬로 실행하려면 별도 파일 DB·SeaweedFS·설정이 추가로 필요하며, 웹의 기본 프록시가 file-service(8082)로 자동 분기되는 것도 아니에요. 이번 실제 파일 API 검증은 팀 dev에서 했어요.</p></div></details>
+</section>
+
+<section class="chapter" id="flow">
+<h2><span class="n">CHAPTER 05</span>버튼을 누르면 파일은 어디로 가나</h2>
+<p>아래 버튼을 눌러 요청 순서를 바꿔 보세요. <strong>목록·권한 요청과 실제 파일 전송은 다른 길</strong>이에요.</p>
+<div class="flow-tabs" role="tablist" aria-label="파일 동작 선택">
+<button role="tab" aria-selected="true" aria-controls="flow-list" id="tab-list" data-flow="list">목록</button>
+<button role="tab" aria-selected="false" aria-controls="flow-upload" id="tab-upload" data-flow="upload">업로드</button>
+<button role="tab" aria-selected="false" aria-controls="flow-download" id="tab-download" data-flow="download">다운로드</button>
+<button role="tab" aria-selected="false" aria-controls="flow-preview" id="tab-preview" data-flow="preview">미리보기</button>
+<button role="tab" aria-selected="false" aria-controls="flow-delete" id="tab-delete" data-flow="delete">삭제</button>
+</div>
+<div id="flow-list" class="flow-box" role="tabpanel" aria-labelledby="tab-list"><h3>목록은 파일 정보 DB를 읽어요</h3><ol><li>화면이 선택한 조직 번호와 로그인 토큰을 보내요.<br><code>GET /api/files?orgId=1&amp;page=0&amp;size=20</code></li><li>Gateway가 <code>/api/files</code>를 file-service로 전달해요.</li><li>파일 서비스가 토큰을 검사하고 user-service에 조직 소속을 확인해요.</li><li>MySQL에서 그 조직의 <code>COMPLETED</code> 파일 정보를 읽어요.</li><li>화면이 응답의 <code>items</code>와 <code>total</code>로 목록과 페이지를 표시해요.</li></ol><p class="flow-note">파일 이름이 보인 것만으로 저장소의 파일 전송까지 검증된 것은 아니에요.</p></div>
+<div id="flow-upload" class="flow-box" role="tabpanel" aria-labelledby="tab-upload" hidden><h3>업로드는 “신청 → 실제 전송 → 완료 확인”이에요</h3><ol><li>화면이 빈 파일·100MB 상한·파일명을 먼저 검사해요. 최종 검사는 서버도 해요.</li><li><code>POST /api/files</code>에 조직·이름·형식·크기와 로그인 토큰을 보내요.</li><li>서버가 멤버 여부를 확인하고 임시 파일 정보와 5분 유효 업로드 URL을 발급해요.</li><li>브라우저가 발급된 주소로 실제 파일을 <code>PUT</code>해요. <strong>이 저장소 요청에는 로그인 토큰을 붙이지 않아요.</strong></li><li><code>POST /api/files/{id}/complete</code>로 완료를 요청해요.</li><li>서버가 저장된 크기를 확인해 상태를 COMPLETED로 바꿔요. 화면은 성공 안내 후 첫 페이지를 다시 불러와요.</li></ol><p class="flow-note">큰 파일을 file-service 본문으로 중계하지 않고 저장소에 직접 보내는 구조예요. “파일 선택”은 이 전송의 시작 전 단계예요.</p></div>
+<div id="flow-download" class="flow-box" role="tabpanel" aria-labelledby="tab-download" hidden><h3>다운로드는 먼저 허가된 주소를 받아요</h3><ol><li>로그인 토큰과 함께 <code>GET /api/files/{id}/download-url</code>을 요청해요.</li><li>서버가 현재 조직 소속과 파일 완료 상태를 확인해요.</li><li>5분 유효한 임시 다운로드 URL을 돌려줘요.</li><li>브라우저가 그 URL로 저장소의 파일을 받아요. 저장소에는 로그인 토큰을 보내지 않아요.</li><li>받은 파일을 열어 원래 내용과 같은지 비교했어요.</li></ol><p class="flow-note">임시 URL에는 접근 권한 정보가 있으므로 전체 URL도 채팅·스크린샷에 노출하지 않아요.</p></div>
+<div id="flow-preview" class="flow-box" role="tabpanel" aria-labelledby="tab-preview" hidden><h3>미리보기는 지원 형식의 파일을 새 탭에서 열어요</h3><ol><li>화면은 PNG·JPEG·GIF·WebP·AVIF·PDF에만 미리보기 버튼을 표시해요.</li><li><code>GET /api/files/{id}/preview-url</code>로 주소를 새로 발급받아요. 서버도 형식과 소속을 검사해요.</li><li>브라우저가 새 탭에서 그 주소를 열어요. 파일 서비스는 inline 표시용 URL을 발급해요.</li><li>주소 발급이 실패하면 빈 탭을 닫고 안내해요. 팝업이 막혔을 때도 안내해요.</li></ol><p class="flow-note">TXT도 기술적으로 표시할 수 있지만 이번 팀 명세는 이미지·PDF만 지원해요. “가능한 기능”과 “이번에 하기로 한 범위”를 구분했어요.</p></div>
+<div id="flow-delete" class="flow-box" role="tabpanel" aria-labelledby="tab-delete" hidden><h3>삭제는 버튼 표시와 서버 권한을 모두 검사해요</h3><ol><li>화면은 로그인한 사람의 ID와 파일의 <code>uploadedBy</code>, 조직 역할을 보고 버튼을 표시해요.</li><li>파일명·복구 불가 안내가 있는 확인창을 열어요. 취소는 아무 요청도 보내지 않아요.</li><li>동의하면 토큰과 함께 <code>DELETE /api/files/{id}</code>를 요청해요.</li><li>서버가 조직 소속을 다시 확인하고, 올린 사람이거나 OWNER인 경우만 허용해요.</li><li>저장소 파일을 삭제한 뒤 파일 메타데이터를 삭제해요. 성공 응답은 본문 없는 <code>204</code>예요.</li><li>화면은 목록을 갱신해요. 실패하면 파일을 임의로 없애지 않고 안내해요.</li></ol><p class="flow-note">저장소 삭제에 실패하면 서버는 메타데이터 삭제도 진행하지 않아요. 부분 실패와 이미 발급된 URL의 한계는 백엔드 실행 안내에 별도로 기록돼 있어요.</p></div>
+<div class="callout"><strong>JWT / Bearer 토큰은 무엇?</strong><br>로그인 후 받은 임시 인증 증명이라고 생각해요. API 요청의 <code>Authorization: Bearer …</code>에 붙여요. file-service는 이 증명이 올바른 로그인 서버에서 발급됐는지 확인하고, 조직 소속은 별도로 확인해요. 토큰 원문은 비밀번호처럼 취급해요.</div>
+</section>
+
+<section class="chapter" id="deploy">
+<h2><span class="n">CHAPTER 06</span>GitHub에 올린 코드가 팀 웹이 되는 과정</h2>
+<div class="path">
+<div class="node"><strong>내 PC</strong>코드 수정·검사</div><span class="arrow">→</span>
+<div class="node"><strong>PR</strong>자동 검사·사람 리뷰</div><span class="arrow">→</span>
+<div class="node"><strong>main 머지</strong>공유 기준 코드에 합치기</div><span class="arrow">→</span>
+<div class="node"><strong>Actions / GHCR</strong>실행 이미지 만들고 보관</div><span class="arrow">→</span>
+<div class="node"><strong>Argo CD / dev</strong>이미지 버전 적용</div>
+</div>
+<div class="table-wrap"><table><thead><tr><th>동작</th><th>뜻</th><th>그것만으로 안 되는 것</th></tr></thead><tbody>
+<tr><td>저장</td><td>내 PC 파일 변경 보관</td><td>Git 기록·팀 서버 반영은 아님</td></tr>
+<tr><td>git add</td><td>다음 기록에 담을 파일 선택</td><td>커밋·업로드는 아님</td></tr>
+<tr><td>commit</td><td>내 PC Git에 작업 기록</td><td>GitHub 업로드는 아님</td></tr>
+<tr><td>push</td><td>브랜치를 GitHub로 업로드</td><td>main 머지·dev 반영은 아님</td></tr>
+<tr><td>PR</td><td>변경 검토·합치기 요청</td><td>초록 Checks가 사람 승인인 것은 아님</td></tr>
+<tr><td>Squash merge</td><td>PR의 작업을 하나의 main 기록으로 합침</td><td>브라우저 즉시 갱신을 보장하지 않음</td></tr>
+<tr><td>자동 배포</td><td>새 이미지 태그를 Git에 기록하고 클러스터가 실행</td><td>기능·권한 전체 검증을 대신하지 않음</td></tr>
+</tbody></table></div>
+<div class="grid">
+<div class="card"><h3>CI는 어디서 보나요?</h3><p>GitHub의 <strong>Actions</strong> 또는 PR의 <strong>Checks</strong>예요. 이번 <code>npm test</code>는 lint → API·규칙 테스트 → 웹 build 순서였어요. 삭제 PR에서는 17개 테스트가 통과했어요.</p><p>PR 단계의 release가 Skipped인 것은 정상일 수 있어요. main push 후 release가 실행되도록 팀 파이프라인이 구성돼 있어요.</p></div>
+<div class="card"><h3>이미지는 어디서 보나요?</h3><p>GitHub의 <strong>Packages / GHCR</strong>에 실행용 이미지가 있어요. 웹은 <code>idcn-web</code>, 파일 서버는 <code>idcn-file-service</code>예요. 웹 화면 코드 변경은 웹 이미지를, 백엔드 변경은 파일 서버 이미지를 바꿔요.</p><p>이미지는 실제 파일 업로드 보관함이 아니에요. 프로그램 포장물이고, 사용자의 파일은 SeaweedFS에 있어요.</p></div>
+</div>
+<div class="card"><h3>어느 버전이 실행되는지 어떻게 알았나</h3>
+<p>main의 <code>deploy/values/web/values-dev.yaml</code>에서 <code>image.tag</code>를 읽고, 실제 dev Deployment 이미지와 비교했어요.</p>
+<pre><code># 내 PC WSL · 최신 기록만 가져오기
+cd ~/team03-HelloCloud
+git fetch origin
+git show origin/main:deploy/values/web/values-dev.yaml</code></pre>
+<span class="badge server">dev 서버 안 · 읽기 전용</span>
+<pre><code>kubectl -n argocd get applications web-dev
+kubectl -n ideaconnection-dev get deployment web -o wide
+kubectl -n ideaconnection-dev get pods -l app.kubernetes.io/name=web</code></pre>
+<p><code>Synced / Healthy</code>만 보고 끝내지 않았어요. <strong>Git이 가리킨 버전과 실행 이미지가 같은지</strong> 확인했어요. 예를 들어 #125 이후 main은 <code>80ee004</code>였는데 실행 이미지는 <code>cca1e94</code>여서 이전 화면이 보였어요.</p>
+<p class="small">위 태그는 당시 사례예요. 현재 버전은 달라질 수 있으므로 오늘의 값으로 고정해 외우지 않아요.</p>
+<details><summary>Git 새로고침은 무엇을 했나요?</summary><div><p>Argo CD가 최신 main을 다시 읽도록 아래 요청을 보냈어요. 배포 설정 자체를 고친 것은 아니지만, 이미 활성화된 자동 동기화가 새 변경을 적용할 수 있어요. <strong>조회 명령과는 구분하고, 담당자 간 진행을 맞춰 사용해요.</strong></p><pre><code>kubectl -n argocd annotate application web-dev \
+  argocd.argoproj.io/refresh=normal --overwrite</code></pre><p>새 이미지가 준비된 뒤 <code>1/1 Running</code>을 확인했고 브라우저에서 강력 새로고침했어요.</p></div></details>
+</div>
+<div class="callout warn"><strong>개선한 협업 방식</strong><br>처음에는 기능마다 검토·머지를 반복했어요. 이후 관련 보완을 같은 #126 브랜치에 모아 구현·검사한 뒤 한 번에 검토를 요청했어요. 머지된 PR은 결과 댓글로 마무리하고, 검증 결과만 남기는 데 새 PR을 만들지는 않아요.</div>
+</section>
+
+<section class="chapter" id="errors">
+<h2><span class="n">CHAPTER 07</span>실제로 만난 오류와 해결 근거</h2>
+<p>증상만 보고 프로그램 전체가 망가졌다고 생각하지 말고, <strong>어느 구간의 요청이 실패했는지</strong> 나눠 봐요.</p>
+<details open><summary>① sh: 1: vite: not found</summary><div><p><b>발생 위치:</b> 내 PC 웹 폴더에서 npm run dev.</p><p><b>뜻:</b> 웹 실행에 필요한 Vite 패키지가 아직 설치되지 않았어요.</p><p><b>처리:</b> 같은 웹 폴더에서 <code>npm ci</code> → <code>npm run dev</code>.</p><p><b>해결 근거:</b> VITE ready와 Local: localhost:5173 표시.</p></div></details>
+<details><summary>② HTTP 431 / ERR_HTTP_RESPONSE_CODE_FAILURE</summary><div><p><b>관찰:</b> Vite가 431을 기록했고, 로그인 경로가 웹 주소 쪽으로 잘못 이어지는 상황을 겪었어요.</p><p><b>뜻:</b> 431은 요청 헤더가 너무 크다는 응답이에요. 반복 리다이렉트·쿠키 등 원인은 여러 가지라 코드만으로 하나를 단정하지 않아요.</p><p><b>당시 조치:</b> 로컬 Keycloak 주소를 .env.local에서 <code>http://localhost:8180</code>로 맞추고 Vite를 재시작한 뒤 웹 시작 주소부터 다시 접속했어요.</p><p><b>구분:</b> 잘못된 로그인 경로와 별도로 Keycloak 자체도 켜져 있어야 했어요. 주소 수정만으로 모든 의존 프로그램이 실행되는 것은 아니에요.</p></div></details>
+<details><summary>③ localhost:8180 연결 거부</summary><div><p><b>뜻:</b> 해당 주소에서 응답할 프로그램이 없거나 접속이 되지 않는 상태예요.</p><p><b>처리:</b> Docker Compose로 Keycloak 실행 후 상태 확인.</p><p><b>해결 근거:</b> Docker 상태 Up과 실제 HelloCloud 로그인 화면 표시.</p></div></details>
+<details><summary>④ .env 파일 없음 / 필수 비밀번호 값 없음</summary><div><p><code>couldn't find env file</code>은 지정한 파일이 없는 것이고, <code>KC_BOOTSTRAP_ADMIN_PASSWORD</code>·<code>DB_PASSWORD</code> 누락은 파일에 필요한 값이 비어 있는 것이에요.</p><p>루트 .env.example을 .env로 복사하고 로컬용 값을 직접 저장한 뒤 재실행했어요. <code>cp -n</code> 경고는 그 복사 옵션의 이식성 안내였고 핵심 실행 실패 원인과 구분했어요.</p><p>이것은 팀 서버 비밀번호를 바꾼 작업이 아니에요. 비밀번호 원문을 Git·채팅으로 공유하지 않았어요.</p></div></details>
+<details><summary>⑤ 로그인 후 조직 목록 API 502</summary><div><p><b>뜻:</b> 웹은 열렸지만 뒤의 API 서버 연결에서 문제가 났어요. “조직이 0개”와 “조회 실패”는 달라요.</p><p><b>당시 원인·처리:</b> MySQL을 켜고 Java 17을 설치한 뒤 user-service를 DB·Keycloak 설정과 함께 실행했어요.</p><p><b>해결 근거:</b> MySQL healthy, Started UserServiceApplication, 브라우저 새로고침 후 조직 목록 정상.</p><p class="small">기동 직후의 health: starting은 바로 실패라고 단정하지 않고 준비 완료를 확인했어요.</p></div></details>
+<details><summary>⑥ Invalid username or password</summary><div><p>화면이 master 영역이면 관리자 로그인이고, hellocloud 영역은 앱 사용자 로그인이에요. 일반 사용자는 웹 시작 주소에서 로그인해야 해요. 로컬·dev 계정 저장소도 별개예요.</p><p>8180을 관리자 전용 포트라고 이해하지 않아요. 같은 Keycloak이 주소의 realm에 따라 다른 로그인 영역을 제공해요.</p></div></details>
+<details><summary>⑦ No static resource api/files / api/orgs/…/invitations</summary><div><p><b>뜻:</b> 요청을 받은 프로그램에 그 경로의 API가 없다는 의미였어요.</p><p>파일 API 준비 전 로컬 웹은 모든 /api를 user-service 8081로 보냈어요. 그곳에 파일 API가 없었으니 실패 안내를 먼저 검증했어요.</p><p>초대 API도 예전 Java 프로세스가 실행 중이면 새 코드가 자동 반영되지 않아요. 실제 실행 버전·접속 목적지·프로그램 재시작 여부를 확인해야 해요.</p></div></details>
+<details open><summary>⑧ 목록은 되는데 업로드 Failed to fetch</summary><div>
+<p><b>서로 다른 길:</b> 목록은 파일 서버와 DB를 읽고, 실제 업로드는 저장소 주소로 가요.</p>
+<p><b>당시 직접 확인한 사실:</b> <code>seaweedfs-s3-route</code>는 Accepted=True지만 ResolvedRefs=False / RefNotPermitted. seaweedfs namespace에 ReferenceGrant가 없었고 저장소 경로는 HTTP 500이었어요.</p>
+<p><b>왜 막혔나:</b> Gateway 경로는 ideaconnection-dev에, 저장소 Service는 seaweedfs에 있었어요. 다른 작업 공간의 저장소를 참조해도 된다는 허용이 필요했어요.</p>
+<p><b>Git과 실제 서버 차이:</b> 허용 YAML은 #119에 있었지만, 해당 파일을 관리할 seaweedfs-dev 앱 등록·이관은 당시 진행 전이었어요. <strong>머지된 파일이 있다고 모든 설정이 자동 적용되는 구조는 아니었어요.</strong></p>
+<p><b>처리:</b> 기선님도 동일 상태를 공유했고 건률님이 설정을 반영했어요. 이후 브라우저 업로드·다운로드를 다시 확인했어요.</p>
+<p><b>주의:</b> Failed to fetch만으로 ReferenceGrant가 원인이라고 단정할 수는 없어요. URL·네트워크·CORS 같은 가능성 중 실제 조회에서 발견한 차단 요인이었고, 반영 후 성공으로 연결을 검증했어요. SeaweedFS 전체 이관이 완료됐는지까지 이 결과로 대신하지 않아요.</p>
+</div></details>
+<details><summary>⑨ 머지했는데 이전 디자인이 보여요</summary><div><p>머지 → 이미지 빌드·업로드 → Git 태그 갱신 → Argo CD 반영 → 새 파드 준비 → 브라우저 새로고침 순서예요. 이 중 하나가 남으면 이전 화면일 수 있어요.</p><p>당시 Actions 성공과 main 이미지 태그를 확인한 다음 실제 Deployment 태그를 비교했어요. 새 태그·1/1 Running을 확인한 뒤 Ctrl+Shift+R로 새로고침했어요.</p></div></details>
+<details><summary>⑩ 삭제 API 401 → 다시 실행해 403</summary><div><p><b>401:</b> 서버가 로그인을 인정하지 못했어요. 토큰 만료·인증 헤더 누락 등 여러 가능성이 있어 당시 원인을 하나로 확정하지 않았어요.</p><p><b>처리:</b> testuser2의 정상 목록 요청을 기준으로 인증 정보를 유지하고 주소·method만 수정해 재요청했어요.</p><p><b>403:</b> “파일을 처리할 권한이 없습니다.”가 왔어요. 이 요청에서는 인증된 다른 멤버의 삭제를 서버가 거부한 증거예요. 401을 권한 차단 성공으로 기록하지 않았어요.</p></div></details>
+<details><summary>⑪ git diff 화면에 갇힌 것 같아요 / UI 리뷰와 Checks가 헷갈려요</summary><div><p>git diff가 긴 내용을 페이지로 보여주고 있다면 <code>q</code>로 나와요. 프로그램을 지우는 동작이 아니에요.</p><p>PR의 초록 Checks는 자동 검사 결과예요. 사람의 리뷰·팀장님의 머지 승인과 별개예요. Update branch는 최신 main을 작업 브랜치로 가져오는 기능이고, Squash and merge는 작업을 main으로 합치는 기능이에요.</p></div></details>
+</section>
+
+<section class="chapter" id="permission">
+<h2><span class="n">CHAPTER 08</span>삭제 버튼을 숨긴 것과 서버가 막은 것</h2>
+<div class="table-wrap"><table><thead><tr><th>사람</th><th>자기 파일</th><th>같은 조직의 다른 사람 파일</th></tr></thead><tbody>
+<tr><td>일반 MEMBER</td><td>삭제 가능</td><td>삭제 불가</td></tr>
+<tr><td>조직 OWNER</td><td>삭제 가능</td><td>삭제 가능</td></tr>
+<tr><td>해당 조직 멤버가 아닌 사람</td><td colspan="2">조직 소속 검사에서 차단해야 해요. 별도 조직 간 검증 항목이에요.</td></tr>
+</tbody></table></div>
+<p>권한은 계정 이름으로 고정되지 않아요. <strong>testuser가 OWNER였기 때문에 모든 파일에 삭제 버튼이 보인 것은 정상</strong>이었어요. 같은 계정도 조직에 따라 역할이 다를 수 있어요.</p>
+<div class="split">
+<div class="card"><h4>화면의 검사</h4><p>토큰의 사용자 ID(<code>sub</code>)와 파일의 <code>uploadedBy</code>를 비교하고 조직 역할을 봐요. 자기 파일 또는 OWNER에만 삭제 버튼을 보여요.</p><p><strong>목적:</strong> 실수를 줄이고 사용자가 할 수 있는 행동을 보여줘요.</p></div>
+<div class="card"><h4>서버의 검사</h4><p>삭제 API가 토큰·현재 조직 소속·업로더/OWNER 조건을 다시 검사해요. 화면 정보를 믿고 삭제하지 않아요.</p><p><strong>목적:</strong> 사용자가 버튼을 건너뛰어 요청해도 실제 데이터를 보호해요.</p></div>
+</div>
+<div class="card"><h3>직접 했던 검사: 시험 파일 ID 11</h3>
+<ol class="check-list">
+<li>testuser가 <code>권한검사용.txt</code>를 올렸어요. 이 검사는 권한 문제가 있으면 파일이 지워질 수 있으므로 버려도 되는 시험 파일만 사용했어요.</li>
+<li>같은 조직의 일반 멤버 testuser2로 로그인했어요. 파일 목록에는 보이지만 삭제 버튼이 없었어요.</li>
+<li>Chrome <strong>F12 → Network</strong>에서 파일 목록 옆 <strong>새로고침</strong>을 눌렀어요. 도구를 연 뒤 요청해야 기록이 보여요.</li>
+<li><code>files?orgId=…</code>의 Response에서 시험 파일의 실제 <code>id=11</code>을 찾았어요. 예시 번호와 실제 번호를 구분했어요.</li>
+<li>정상 인증된 목록 요청을 우클릭 → <strong>Edit and resend as fetch</strong>. 하단 콘솔에 생긴 요청에서 URL과 method만 수정했어요.</li>
+</ol>
+<pre><code>요청 주소: http://10.10.24.101/api/files/11
+요청 방식: DELETE
+나머지 인증 헤더: testuser2의 정상 요청에서 유지</code></pre>
+<p>브라우저가 생성한 코드는 로그인 토큰을 포함해서 교본에 전체를 싣지 않아요. 콘솔 붙여넣기 경고를 <code>allow pasting</code>으로 우회하지 않았어요. Edit and resend도 콘솔에 코드를 보여주므로 <strong>내용을 확인하고 시험 대상만 요청</strong>해야 해요.</p>
+<pre><code>{
+  "detail": "파일을 처리할 권한이 없습니다.",
+  "instance": "/api/files/11",
+  "status": 403
+}</code></pre>
+<div class="callout good"><strong>이 응답으로 말할 수 있는 것</strong><br>“같은 조직의 다른 일반 멤버가 타인의 파일을 지우려고 직접 API를 호출해도 서버가 거부했습니다.”</div>
+<div class="callout warn"><strong>이 응답 하나로 말할 수 없는 것</strong><br>다른 조직의 파일 목록·다운로드가 모두 차단됐다는 뜻은 아니에요. “다른 멤버의 삭제”와 “다른 조직의 접근”은 다른 시험이에요. OWNER의 삭제 허용도 별도 확인했어요.</div>
+</div>
+</section>
+
+<section class="chapter" id="map">
+<h2><span class="n">CHAPTER 09</span>폴더·명령어를 위치와 연결하기</h2>
+<div class="table-wrap"><table><thead><tr><th>파일 / 폴더</th><th>하는 일</th><th>확인할 때</th></tr></thead><tbody>
+<tr><td>services/web/src/pages/Dashboard.jsx</td><td>메뉴별 화면 연결, 조직 역할 전달</td><td>파일 메뉴가 어디로 이어지는지</td></tr>
+<tr><td>…/FileManager.jsx</td><td>파일 선택·취소·검사·업로드·목록 갱신</td><td>업로드 버튼이 왜 비활성인지</td></tr>
+<tr><td>…/FileList.jsx</td><td>목록·페이지·미리보기·다운로드·삭제 요청</td><td>목록·버튼·실패 안내</td></tr>
+<tr><td>…/FileDeleteDialog.jsx</td><td>삭제 확인·취소·처리 중 상태</td><td>사용자 확인 없이 삭제되지 않는지</td></tr>
+<tr><td>services/web/src/api/files.js</td><td>팀 파일 API 요청 함수</td><td>업로드의 시작·PUT·완료 순서</td></tr>
+<tr><td>services/web/src/api/client.js</td><td>토큰 첨부·공통 오류 처리</td><td>API에 인증이 어떻게 붙는지</td></tr>
+<tr><td>services/web/src/auth/keycloak.js</td><td>로그인·로그아웃·토큰 갱신</td><td>계정과 인증 연결</td></tr>
+<tr><td>services/web/vite.config.js</td><td>로컬 개발 서버 /api 프록시</td><td>로컬 요청이 8081로 가는 이유</td></tr>
+<tr><td>services/compose.yaml</td><td>로컬 Keycloak·MySQL 실행 정의</td><td>어느 이미지·포트를 실행하는지</td></tr>
+<tr><td>services/file-service/</td><td>Java 파일 백엔드</td><td>권한·저장·API·테스트</td></tr>
+<tr><td>deploy/values/file-service/</td><td>환경별 이미지·포트·설정 참조</td><td>dev에서 어느 버전을 실행하는지</td></tr>
+<tr><td>deploy/argocd/services/file-service-dev.yaml</td><td>파일 서버의 자동 배포 연결</td><td>Argo CD가 무엇을 읽는지</td></tr>
+<tr><td>deploy/manifests/gateway/dev/</td><td>웹·API·저장소 접속 경로</td><td>요청을 어느 서비스에 보낼지</td></tr>
+<tr><td>deploy/manifests/seaweedfs/dev/reference-grant.yaml</td><td>다른 작업 공간에서 저장소 Service 참조 허용</td><td>RefNotPermitted 원인 확인</td></tr>
+<tr><td>.github/workflows/ci.yaml</td><td>PR 검사·main 이미지 빌드·태그 갱신</td><td>CI 산출물과 자동 배포 연결</td></tr>
+</tbody></table></div>
+
+<div class="card"><h3>팀 dev용 Chrome을 열었던 방법</h3>
+<p>팀 서버의 내부 주소는 내 PC에서 바로 닿지 않을 수 있어요. SSH 연결 통로를 켜고, 그 통로를 쓰는 별도 Chrome으로 접속했어요.</p>
+<span class="badge pc">① 내 PC · VS Code WSL · 실행 후 계속 켜 두기</span>
+<div class="cmdhead"><span>팀 내부망 연결 통로</span><button data-copy="cmd-tunnel">복사</button></div>
+<pre id="cmd-tunnel"><code>ssh -N -D 127.0.0.1:1080 t3-dev-cp</code></pre>
+<p><code>-N</code>은 서버에서 별도 명령을 실행하지 않는다는 뜻, <code>-D 1080</code>은 내 PC에 SOCKS 프록시 통로를 연다는 뜻이에요. 아무 문구 없이 대기해도 정상일 수 있어요.</p>
+<span class="badge powershell">② Windows PowerShell · WSL 아님</span>
+<div class="cmdhead"><span>팀 dev 전용 Chrome 실행</span><button data-copy="cmd-chrome">복사</button></div>
+<pre id="cmd-chrome"><code>&amp; "C:\Program Files\Google\Chrome\Application\chrome.exe" --proxy-server="socks5://127.0.0.1:1080" --unsafely-treat-insecure-origin-as-secure="http://10.10.24.101" --user-data-dir="$env:TEMP\chrome-t4" "http://10.10.24.101"</code></pre>
+<p>웹 로그인 라이브러리가 요구하는 브라우저 기능 때문에 당시 HTTP dev 주소만 안전한 주소로 취급하는 옵션을 사용했어요. <strong>내부 개발용 임시 방법이며 운영 HTTPS 설정을 대신하지 않아요.</strong> 별도 프로필을 사용해 일반 Chrome과 구분했어요.</p>
+<p>팀 dev 계정으로 로그인 → 조직 선택 → 파일 관리로 들어갔어요. 로컬 계정, Argo CD admin 계정을 쓰지 않았어요.</p>
+</div>
+<div class="card"><h3>조회할 서버에 들어가기</h3><span class="badge pc">내 PC WSL에서 입력</span><pre><code>ssh t3-dev-cp</code></pre><p>접속 뒤 실제 서버 이름이 <code>lab@t4-dev-cp</code>로 보여도, 로컬 접속 별칭이 t3-로 저장돼 있어서 그런 것이었어요. prod는 별도 별칭 <code>t3-prod-cp</code>예요.</p><span class="badge server">서버에서 내 PC로 나오기</span><pre><code>exit</code></pre><p class="small">서버에 접속하는 것과 로컬 웹을 켜는 것은 다른 작업이에요. npm run dev는 로컬 웹이 필요할 때 내 PC의 웹 폴더에서 실행해요.</p></div>
+<div class="card"><h3>읽기만 하는 상태 확인 명령</h3><span class="badge server">dev 관리 서버 안</span><pre><code># 자동 배포 앱 상태
+kubectl -n argocd get applications
+
+# 파일 서버·웹 서버 실행 상태
+kubectl -n ideaconnection-dev get deployment web file-service -o wide
+kubectl -n ideaconnection-dev get pods
+
+# 파일 저장소로 가는 접속 경로 상태
+kubectl -n ideaconnection-dev get httproute seaweedfs-s3-route -o yaml
+
+# 다른 작업 공간 참조 허용 설정
+kubectl -n seaweedfs get referencegrants</code></pre><p><code>kubectl</code>은 Kubernetes에 질문하거나 작업을 요청하는 도구예요. 여기서 <code>get</code>은 조회, <code>-n</code>은 작업 공간(namespace) 지정이에요. 조회 결과에서 실제 오류 이유를 읽는 것이 핵심이에요.</p><p><strong>Secret 전체나 환경변수 전체를 출력하지 않아요.</strong> 한 번은 전체 환경변수 조회가 비밀번호 노출 위험 때문에 자동 검토에서 차단됐고, 공개 설정과 경로 상태만 읽는 방식으로 바꿨어요.</p></div>
+</section>
+
+<section class="chapter" id="verify">
+<h2><span class="n">CHAPTER 10</span>“됐다”를 무엇으로 확인했나</h2>
+<div class="table-wrap"><table><thead><tr><th>증거</th><th>알 수 있는 것</th><th>이것만으로 부족한 것</th></tr></thead><tbody>
+<tr><td>npm test 통과</td><td>lint·자동 테스트·배포용 빌드 결과</td><td>실제 dev 로그인·저장소·브라우저 동작</td></tr>
+<tr><td>Pod 1/1 Running</td><td>프로그램이 실행되고 준비 검사 통과</td><td>조직별 기능·권한이 전부 맞음</td></tr>
+<tr><td>Argo Synced / Healthy</td><td>Argo가 읽은 설정과 상태가 일치·정상</td><td>그 기록이 내가 원하는 최신 main인지·사용자 기능 성공</td></tr>
+<tr><td>목록 200</td><td>이 토큰·조직으로 목록 API 성공</td><td>파일 PUT·다운로드 경로 성공</td></tr>
+<tr><td>업로드 후 목록 표시</td><td>시작·전송·완료 처리 연결</td><td>다운로드 파일 내용의 일치</td></tr>
+<tr><td>다운로드 원본 일치</td><td>실제 전송 결과의 내용 확인</td><td>모든 형식·모든 조직 권한</td></tr>
+<tr><td>타인 삭제 버튼 없음</td><td>화면의 권한별 표시</td><td>서버 직접 호출도 거부</td></tr>
+<tr><td>타인 DELETE 403</td><td>해당 사용자의 해당 삭제 요청이 차단됨</td><td>다른 조직 목록·읽기·삭제 모두 차단</td></tr>
+</tbody></table></div>
+<div class="card"><h3>2026.11.18 기준 결과</h3>
+<p><span class="badge done">연후님 dev 확인</span>목록·업로드·원본 내용이 같은 다운로드·이미지/PDF 미리보기·삭제 취소/성공·새로고침 후 유지·OWNER의 타인 시험 파일 삭제.</p>
+<p><span class="badge done">연후님 직접 요청 확인</span>일반 멤버 testuser2에게 타인 파일의 삭제 버튼 미표시, 타인 파일 ID 11 DELETE 요청에 403 응답.</p>
+<p><span class="badge done">코드 검사 / 로컬 예시</span>최종 자동 테스트 17개, lint·build. 가짜 응답으로 삭제 실패·재시도·마지막 페이지 복귀·390px 배치 확인. 실제 팀 파일을 쓰는 검증과 구분.</p>
+<p><span class="badge done">건률님 기록</span>#119에서 실제 MySQL·SeaweedFS 업로드·다운로드 원본 일치·삭제 검증을 보고. 실제 사용자 인증을 대체한 통합 시험 기록과 구분.</p>
+<p><span class="badge pending">추가 결과 확인 대기</span>실제 dev 계정으로 다른 조직 접근 차단 검증 여부를 건률님께 확인 요청. 완료 답변은 이 교본 작성 시점에 아직 받지 않았어요.</p>
+</div>
+</section>
+
+<section class="chapter" id="handoff">
+<h2><span class="n">CHAPTER 11</span>팀원과 어떤 정보를 맞췄나</h2>
+<div class="table-wrap"><table><thead><tr><th>상대</th><th>서로 맞출 정보</th><th>우리가 공유한 예</th></tr></thead><tbody>
+<tr><td>파일 백엔드 / 건률님</td><td>API 경로·응답·권한·저장소 주소·검증 범위</td><td>목록 성공, 업로드 실패, 실제 라우팅 상태, 화면 검증 결과, 다른 조직 차단 여부</td></tr>
+<tr><td>user 백엔드 / 팀장님</td><td>조직 ID·역할·멤버십·리뷰와 머지</td><td>OWNER/MEMBER 구분, 정상 조직 선택, PR 검토 요청</td></tr>
+<tr><td>CI·DB·모니터링 / 기선님</td><td>빌드 이미지·태그·DB·클러스터 상태</td><td>Gateway Degraded와 ReferenceGrant 누락을 같은 근거로 확인</td></tr>
+<tr><td>Argo CD 담당 / 연후님</td><td>앱 관리 범위·최신 Git·이미지 일치</td><td>새 이미지 반영 여부 확인, 기존 서비스·저장 공간을 무작정 재설치하지 않기</td></tr>
+<tr><td>웹 기본 틀·채팅 / 호윤님</td><td>기존 로그인·조직 화면 구조, 채팅의 인증·실시간 전달, 향후 채널 첨부파일 연결</td><td>호윤님이 준비한 웹 기본 틀에 파일 화면을 연결했어요. 채팅 실시간 전달은 별도 담당이며, 채널 안에서 파일을 공유·미리보기하는 연결은 이번 파일 관리 화면 검증과 구분해요.</td></tr>
+</tbody></table></div>
+<div class="card"><h3>오류를 공유할 때의 순서</h3><p><strong>어느 환경 / 누가 / 무엇을 / 어떤 결과 / 어디까지 확인했는지</strong>를 말하면 돼요.</p><p>예: “dev에서 일반 멤버 testuser2로 확인했습니다. 목록은 성공했지만 업로드가 실패했습니다. 저장소 경로에 RefNotPermitted가 있고, ReferenceGrant가 없습니다. 설정 반영 후 다시 확인하겠습니다.”</p><p>원인이 확실하지 않으면 “이것 때문이라고 확정” 대신 <strong>관찰한 사실과 아직 확인할 것</strong>을 구분해요. 비밀번호·JWT·서명 URL을 첨부하지 않아요.</p></div>
+</section>
+
+<section class="chapter" id="speak">
+<h2><span class="n">CHAPTER 12</span>질문을 받으면 이렇게 설명하기</h2>
+<div class="qa"><h3>“파일 서비스에서 뭘 했어요?”</h3><p>“저는 파일 관리 화면을 맡았습니다. 먼저 API 없이 파일 선택과 오류 안내를 만들고, 백엔드가 준비된 뒤 목록·업로드·미리보기·다운로드·삭제를 연결했습니다. 팀 dev에 배포해서 실제 계정으로 확인했고, 남의 파일을 삭제하려는 API 요청이 403으로 차단되는 것도 검사했습니다.”</p></div>
+<div class="qa"><h3>“파일은 어디에 저장돼요?”</h3><p>“이름·조직·주인·크기 같은 정보는 파일 서비스의 MySQL에, 실제 파일 내용은 SeaweedFS에 저장됩니다. 브라우저는 파일 서버가 발급한 임시 주소로 저장소에 직접 업로드합니다.”</p></div>
+<div class="qa"><h3>“로그인은 됐는데 왜 파일을 못 지워요?”</h3><p>“로그인은 누구인지 확인하는 것이고, 삭제는 별도 권한입니다. 같은 조직의 일반 멤버도 다른 사람이 올린 파일은 지울 수 없습니다. 파일을 올린 사람과 조직 OWNER만 삭제할 수 있습니다.”</p></div>
+<div class="qa"><h3>“삭제 버튼만 숨기면 되는 거 아니에요?”</h3><p>“사용자가 요청을 직접 만들 수 있어서 서버도 검사해야 합니다. 실제로 버튼이 없는 계정으로 DELETE를 보냈고, 서버가 403을 반환하는 것까지 확인했습니다.”</p></div>
+<div class="qa"><h3>“목록은 됐는데 업로드는 왜 안 됐어요?”</h3><p>“목록은 파일 정보 DB를 읽는 길이고, 업로드는 실제 저장소로 가는 길이기 때문입니다. 당시에는 Gateway에서 다른 작업 공간의 저장소를 참조할 허용 설정이 없어 막혔습니다. Git에는 파일이 있었지만 실제 서버에 적용되지 않았고, 반영 후 업로드가 성공했습니다.”</p></div>
+<div class="qa"><h3>“CI/CD를 했다는 증거는 어디 있어요?”</h3><p>“PR Checks와 Actions에서 검사·빌드 결과, Packages에서 이미지, main의 values에서 이미지 태그를 보여드릴 수 있습니다. dev에서는 Deployment의 실제 이미지와 파드 준비 상태를 비교하고, 마지막으로 브라우저 동작을 확인했습니다.”</p></div>
+<div class="card"><h3>화면 공유로 보여줄 5곳</h3><ol class="check-list"><li><strong>팀 dev 파일 화면:</strong> 목록·업로드·이미지/PDF 미리보기·다운로드. 삭제는 시험 파일만 사용.</li><li><strong>#126:</strong> 구현 설명, 리뷰, 자동 검사와 dev 최종 검증 댓글.</li><li><strong>VS Code의 files.js / FileList.jsx:</strong> 어떤 API를 어느 버튼에서 요청하는지.</li><li><strong>Network의 403 응답:</strong> 로그인 토큰은 숨기고 status·detail·instance만 설명.</li><li><strong>main values와 dev Deployment:</strong> 같은 이미지 태그인지 비교. 이미지 태그는 최신값으로 조회.</li></ol></div>
+</section>
+
+<section class="chapter" id="quiz">
+<h2><span class="n">CHAPTER 13</span>외우기보다 구분해 보기</h2>
+<div class="quiz-item" data-answer="1" data-explain="MySQL은 파일 정보, SeaweedFS는 실제 파일 내용입니다."><p>1. 이미지의 실제 내용은 어디에 보관했나요?</p><button data-choice="0">MySQL에 전부 저장</button><button data-choice="1">SeaweedFS</button><div class="quiz-feedback" aria-live="polite"></div></div>
+<div class="quiz-item" data-answer="0" data-explain="PR 검사 통과는 사람의 검토·머지 승인과 다릅니다."><p>2. PR의 Checks가 초록색이면 사람도 승인한 건가요?</p><button data-choice="0">아니요, 자동 검사 결과예요</button><button data-choice="1">네, 바로 같은 뜻이에요</button><div class="quiz-feedback" aria-live="polite"></div></div>
+<div class="quiz-item" data-answer="1" data-explain="403은 이 요청을 권한 때문에 거부했다는 근거입니다. 401 인증 실패와 구분합니다."><p>3. testuser2의 타인 파일 삭제 차단을 확인한 응답은?</p><button data-choice="0">401 로그인이 필요합니다</button><button data-choice="1">403 파일 처리 권한 없음</button><div class="quiz-feedback" aria-live="polite"></div></div>
+<div class="quiz-item" data-answer="0" data-explain="목록 성공만으로 실제 저장소 전송 경로를 검증할 수 없습니다."><p>4. 목록이 나오면 업로드와 다운로드도 정상인가요?</p><button data-choice="0">별도로 확인해야 해요</button><button data-choice="1">자동으로 보장돼요</button><div class="quiz-feedback" aria-live="polite"></div></div>
+<div class="quiz-item" data-answer="1" data-explain="Git 파일 반영과 앱 등록·동기화는 다릅니다. 실제로 ReferenceGrant 파일은 있었지만 서버에는 없었습니다."><p>5. Git에 허용 YAML이 있으면 서버에도 반드시 있나요?</p><button data-choice="0">항상 있어요</button><button data-choice="1">적용 상태를 따로 확인해요</button><div class="quiz-feedback" aria-live="polite"></div></div>
+</section>
+
+<section class="chapter" id="sources">
+<h2><span class="n">근거와 범위</span>어디를 보고 정리했나</h2>
+<div class="card">
+<p>대화에서 확인된 사용자 실행 결과·스크린샷, 담당자의 공유 메시지와 최신 main의 아래 파일들을 대조했습니다. 문서가 갱신되면 링크의 내용은 바뀔 수 있습니다.</p>
+<ul class="check-list">
+<li><a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/blob/main/docs/api/file.md">파일 API 명세</a> — 업로드 순서, 형식·크기·권한, 응답·오류.</li>
+<li><a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/blob/main/services/file-service/README.md">파일 서비스 실행·검증 안내</a> — 저장소 검증과 실제 인증 검증의 차이, 배포·이관 범위.</li>
+<li><a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/blob/main/services/file-service/src/main/java/com/ideaconnection/file/FileService.java">FileService.java</a> — 실제 업로드 검사·목록 필터·삭제 권한·저장소 연결.</li>
+<li><a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/blob/main/services/web/README.md">웹 실행·검증 안내</a> — 로컬 실행과 화면 검증 기록.</li>
+<li><a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/blob/main/deploy/README.md">배포 안내</a> · <a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/blob/main/deploy/cluster/README.md">서버 구성 안내</a> — dev 접속·DB·Argo 관리 범위.</li>
+<li><a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/pull/119">#119 백엔드</a> · <a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/pull/102">#102 기본 연결</a> · <a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/pull/125">#125 미리보기</a> · <a href="https://github.com/ktcloud-cloudnative-2026/team03-HelloCloud/pull/126">#126 삭제·검증</a></li>
+</ul>
+<p class="small">팀 dev의 외부 HTTP 경로와 실행 이미지까지 확인한 사실, 연후님이 직접 브라우저에서 확인한 사실, 건률님이 #119에 기록한 시험을 섞어 과장하지 않았습니다. 다른 조직 접근 차단 최종 회신은 미확인 상태로 남겼습니다. prod Argo CD 설치는 별도 완료 작업이며, 이 교본은 파일 서비스 dev 과정을 다룹니다.</p>
+</div>
+</section>
+<nav class="chapter-pager" aria-label="챕터 이동"><a id="previous-chapter" href="#start"><small>이전 챕터</small><span></span></a><a id="next-chapter" href="#msa"><small>다음 챕터</small><span></span></a></nav>
+<footer class="bottom">파일 하나를 “보이게 하는 일”에서 “안전하게 공유하는 서비스”까지. 이 교본은 로컬 파일이므로 링크를 팀원에게 보내는 것만으로 공유되지는 않습니다. HTML 파일 자체를 전달하거나 별도 게시해야 합니다. 인쇄 버튼으로 PDF 저장도 가능합니다.<div id="copy-status" aria-live="polite"></div></footer>
+</main>
+</div>
+<script>
+const tabs=Array.from(document.querySelectorAll('[data-flow]'));
+function setFlow(button){tabs.forEach(function(tab){const active=tab===button;tab.setAttribute('aria-selected',String(active));document.getElementById(tab.getAttribute('aria-controls')).hidden=!active;});}
+tabs.forEach(function(button,index){button.addEventListener('click',function(){setFlow(button);});button.addEventListener('keydown',function(event){let next=index;if(event.key==='ArrowRight')next=(index+1)%tabs.length;else if(event.key==='ArrowLeft')next=(index+tabs.length-1)%tabs.length;else return;event.preventDefault();tabs[next].focus();setFlow(tabs[next]);});});
+document.querySelectorAll('[data-copy]').forEach(function(button){button.addEventListener('click',async function(){const text=document.getElementById(button.dataset.copy).textContent;try{await navigator.clipboard.writeText(text);button.textContent='복사됨';}catch(error){const range=document.createRange();range.selectNodeContents(document.getElementById(button.dataset.copy));const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);button.textContent='선택됨 · Ctrl+C';}setTimeout(function(){button.textContent='복사';},2500);});});
+document.querySelectorAll('.quiz-item').forEach(function(item){item.querySelectorAll('button').forEach(function(button){button.addEventListener('click',function(){const correct=button.dataset.choice===item.dataset.answer;item.querySelectorAll('button').forEach(function(peer){peer.classList.remove('correct','wrong');peer.setAttribute('aria-pressed',String(peer===button));});button.classList.add(correct?'correct':'wrong');item.querySelector('.quiz-feedback').textContent=(correct?'맞아요. ':'다시 구분해 봐요. ')+item.dataset.explain;});});});
+document.getElementById('print-button').addEventListener('click',function(){window.print();});
+const chapters=Array.from(document.querySelectorAll('section.chapter'));
+const chapterLinks=Array.from(document.querySelectorAll('.side nav a'));
+const chapterSelect=document.getElementById('chapter-select');
+chapters.forEach(function(chapter,index){
+  const option=document.createElement('option');
+  option.value=chapter.id;
+  option.textContent=chapterLinks[index].textContent;
+  chapterSelect.appendChild(option);
+});
+function showChapter(){
+  const requested=window.location.hash.slice(1);
+  const index=Math.max(0,chapters.findIndex(function(chapter){return chapter.id===requested;}));
+  chapters.forEach(function(chapter,i){chapter.hidden=i!==index;});
+  document.querySelector('.hero').hidden=index!==0;
+  document.querySelector('.intro').hidden=index!==0;
+  chapterLinks.forEach(function(link,i){link.classList.toggle('active',i===index);if(i===index)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
+  chapterSelect.value=chapters[index].id;
+  document.getElementById('chapter-position').innerHTML='<strong>'+(index+1)+' / '+chapters.length+'</strong> · '+chapterLinks[index].textContent;
+  const previous=document.getElementById('previous-chapter');
+  const next=document.getElementById('next-chapter');
+  previous.hidden=index===0;
+  next.hidden=index===chapters.length-1;
+  if(index>0){previous.href='#'+chapters[index-1].id;previous.querySelector('span').textContent=chapterLinks[index-1].textContent;}
+  if(index<chapters.length-1){next.href='#'+chapters[index+1].id;next.querySelector('span').textContent=chapterLinks[index+1].textContent;}
+  document.title=chapterLinks[index].textContent+' — 파일 서비스 교본';
+  document.body.classList.add('paged-book');
+}
+chapterSelect.addEventListener('change',function(){window.location.hash=chapterSelect.value;});
+window.addEventListener('hashchange',function(){showChapter();window.scrollTo({top:0,behavior:'instant'});});
+showChapter();
+let printedDetails=[];
+window.addEventListener('beforeprint',function(){printedDetails=Array.from(document.querySelectorAll('details')).map(function(element){const state={element:element,open:element.open};element.open=true;return state;});});
+window.addEventListener('afterprint',function(){printedDetails.forEach(function(state){state.element.open=state.open;});});
+</script>
+</body>
+</html>
